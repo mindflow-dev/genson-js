@@ -93,6 +93,15 @@ describe('SchemaBuilder', () => {
                     properties: { one: { type: 'integer' }, two: { type: 'string' } },
                 });
             });
+
+            it('it should generate schema for object with props of different types w/ default values', () => {
+                const schema = createSchema({ one: 1, two: 'second' }, { defaultValues: true });
+                expect(schema).toEqual({
+                    type: 'object',
+                    properties: { one: { type: 'integer', default: 1 }, two: { type: 'string', default: "second" } },
+                    required: ['one', 'two'],
+                });
+            });
         });
 
         describe('nested array', () => {

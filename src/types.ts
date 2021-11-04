@@ -14,10 +14,12 @@ export type Schema = {
     properties?: Record<string, Schema>;
     required?: string[];
     anyOf?: Array<Schema>;
+    default?: Object
 };
 
 export type SchemaGenOptions = {
     noRequired: boolean;
+    defaultValues: boolean;
 };
 
 export type SchemaComparisonOptions = {

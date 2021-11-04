@@ -1,32 +1,33 @@
 import { ValueType, Schema, SchemaGenOptions } from './types';
 
 function createSchemaFor(value: any, options?: SchemaGenOptions): Schema {
+    const defaultValue = options?.defaultValues ? { default: value } : {} 
     switch (typeof value) {
         case 'number':
             if (Number.isInteger(value)) {
-                return { type: ValueType.Integer };
+                return { type: ValueType.Integer, ...defaultValue };
             }
-            return { type: ValueType.Number };
+            return { type: ValueType.Number, ...defaultValue };
         case 'boolean':
-            return { type: ValueType.Boolean };
+            return { type: ValueType.Boolean, ...defaultValue };
         case 'string':
-            return { type: ValueType.String };
+            return { type: ValueType.String, ...defaultValue };
         case 'object':
             if (value === null) {
                 return { type: ValueType.Null };
             }
             if (Array.isArray(value)) {
-                return createSchemaForArray(value);
+                return createSchemaForArray(value, options);
             }
             return createSchemaForObject(value, options);
     }
 }
 
-function createSchemaForArray(arr: Array<any>): Schema {
+function createSchemaForArray(arr: Array<any>, options?: SchemaGenOptions): Schema {
     if (arr.length === 0) {
         return { type: ValueType.Array };
     }
-    const elementSchemas = arr.map((value) => createSchemaFor(value));
+    const elementSchemas = arr.map((value) => createSchemaFor(value, options));
     const items = combineSchemas(elementSchemas);
     return { type: ValueType.Array, items };
 }
@@ -39,7 +40,7 @@ function createSchemaForObject(obj: Object, options?: SchemaGenOptions): Schema 
         };
     }
     const properties = Object.entries(obj).reduce((props, [key, val]) => {
-        props[key] = createSchemaFor(val);
+        props[key] = createSchemaFor(val, options);
         return props;
     }, {});
 
